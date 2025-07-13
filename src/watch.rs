@@ -4,14 +4,13 @@ use std::path::PathBuf;
 use inotify::EventMask;
 use inotify::{Inotify, WatchMask};
 
-use crate::constants;
-use crate::utils;
+use crate::utils::{self, get_desktop_dir};
 
 fn watch_directory() -> Inotify {
     let inotify = Inotify::init().expect("Failed to initialize `inotify");
     let mut watched_path = PathBuf::new();
 
-    watched_path.push(constants::DESKTOP_PATH);
+    watched_path.push(utils::get_desktop_dir());
 
     inotify
         .watches()
@@ -25,7 +24,7 @@ fn on_file_creation(raw_file: Option<&OsStr>) {
     let file_name = raw_file.unwrap();
     let mut file_path = PathBuf::new();
 
-    file_path.push(constants::DESKTOP_PATH);
+    file_path.push(get_desktop_dir());
     file_path.push(file_name);
 
     utils::update_desktop_entry(file_path);

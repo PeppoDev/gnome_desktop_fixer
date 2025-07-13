@@ -1,3 +1,4 @@
+use std::env::home_dir;
 use std::fs::OpenOptions;
 // TODO: Why I need to import this?
 use std::io::Write;
@@ -6,7 +7,20 @@ use std::{ffi::OsStr, fs, path::PathBuf};
 
 use crate::constants;
 
-pub fn mass_update(dir: &str) {
+pub fn get_desktop_dir() -> PathBuf {
+    let dir = home_dir().expect("Could not get the home directory");
+    let dir = dir.join(constants::DESKTOP_PATH);
+    print!("{}", dir.display());
+    return dir;
+}
+
+pub fn get_applications_dir() -> PathBuf {
+    let dir = home_dir().expect("Could not get the home directory");
+    let dir = dir.join(constants::APP_MENU_PATH);
+    return dir;
+}
+
+pub fn mass_update(dir: &PathBuf) {
     let paths = fs::read_dir(dir).unwrap();
 
     for path in paths.filter_map(|f| f.ok()) {
@@ -33,7 +47,7 @@ pub fn update_desktop_entry(path: PathBuf) {
     };
 
     let should_update = !has_startup_wm_class && steam_id != "";
-    let should_cp = path.starts_with(constants::DESKTOP_PATH);
+    let should_cp = path.starts_with(get_desktop_dir());
 
     let file_name = path.file_name().unwrap();
 
@@ -45,18 +59,18 @@ pub fn update_desktop_entry(path: PathBuf) {
 
     if should_cp {
         println!("Copying to the right place");
-        // cp_file_to_app_menu(file_name);
+        cp_file_to_app_menu(file_name);
     }
 }
 
 // TODO: improve this function
 fn cp_file_to_app_menu(file_name: &OsStr) {
     let mut original_file_path = PathBuf::new();
-    original_file_path.push(constants::DESKTOP_PATH);
+    original_file_path.push(get_desktop_dir());
     original_file_path.push(file_name);
 
     let mut destination_file_path = PathBuf::new();
-    destination_file_path.push(constants::APP_MENU_PATH);
+    destination_file_path.push(get_applications_dir());
     destination_file_path.push(file_name);
 
     if destination_file_path.exists() {
