@@ -1,26 +1,13 @@
-use inotify::EventMask;
-
 mod constants;
 mod utils;
+mod watch;
 
 fn main() {
-    let mut inotify = utils::watch_directory();
+    println!("SEARCHING ON APP MENU DIR");
+    utils::mass_update(constants::APP_MENU_PATH);
+    println!("\n\nSEARCHING ON DESKTOP DIR");
+    utils::mass_update(constants::DESKTOP_PATH);
 
-    let mut buffer = [0u8; 4096];
-
-    loop {
-        let events = inotify
-            .read_events_blocking(&mut buffer)
-            .expect("Failed to read inotify events");
-
-        for event in events {
-            let is_dir = event.mask.contains(EventMask::ISDIR);
-
-            if event.mask.contains(EventMask::CREATE) {
-                if !is_dir {
-                    utils::on_file_creation(event.name)
-                }
-            }
-        }
-    }
+    // this will keep the program running and update whenever the desk dir receives a file
+    watch::run_watch();
 }

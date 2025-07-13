@@ -5,3 +5,5 @@ edition = "2024"
 
 [dependencies]
 inotify = "0.11"
+syntect = "5.0"
+

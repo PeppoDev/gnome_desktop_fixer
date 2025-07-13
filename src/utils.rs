@@ -1,4 +1,3 @@
-use inotify::{Inotify, WatchMask};
 use std::fs::OpenOptions;
 // TODO: Why I need to import this?
 use std::io::Write;
@@ -7,45 +6,46 @@ use std::{ffi::OsStr, fs, path::PathBuf};
 
 use crate::constants;
 
-pub fn watch_directory() -> Inotify {
-    let inotify = Inotify::init().expect("Failed to initialize inotify");
-    let mut watched_path = PathBuf::new();
+pub fn mass_update(dir: &str) {
+    let paths = fs::read_dir(dir).unwrap();
 
-    watched_path.push(constants::DESKTOP_PATH);
-
-    inotify
-        .watches()
-        .add(watched_path, WatchMask::CREATE)
-        .expect("Failed to add inotify watch");
-
-    inotify
+    for path in paths.filter_map(|f| f.ok()) {
+        let path = path.path();
+        if let Some(ext) = path.extension() {
+            if ext == "desktop" {
+                update_desktop_entry(path)
+            }
+        }
+    }
 }
 
-pub fn on_file_creation(raw_file: Option<&OsStr>) {
-    let file_name = raw_file.unwrap();
-    let mut file_path = PathBuf::new();
+pub fn update_desktop_entry(path: PathBuf) {
+    println!("\nReading {}", path.display());
 
-    file_path.push(constants::DESKTOP_PATH);
-    file_path.push(file_name);
+    let file = fs::read_to_string(&path).expect("Should have been able to read the file");
+    let content = file.split("\n");
 
-    let original_contents =
-        fs::read_to_string(&file_path).expect("Should have been able to read the file");
-    let contents = original_contents.split("\n");
+    let has_startup_wm_class = has_startup_wm_class(content.clone());
 
-    // TODO: improve it
-    let steam_id = match find_steam_id(contents.clone()) {
+    let steam_id = match find_steam_id(content.clone()) {
         Ok(id) => id,
         Err(_) => "".to_string(),
     };
 
-    let has_steam_id = steam_id != "";
-    let has_startup_wm_class = has_startup_wm_class(contents.clone());
+    let should_update = !has_startup_wm_class && steam_id != "";
+    let should_cp = path.starts_with(constants::DESKTOP_PATH);
 
-    if !has_startup_wm_class && has_steam_id {
-        add_startup_wm_class(steam_id, file_path);
-        cp_file_to_app_menu(file_name);
+    let file_name = path.file_name().unwrap();
+
+    if should_update {
+        add_startup_wm_class(steam_id, &path);
     } else {
         println!("The file do not need any update")
+    }
+
+    if should_cp {
+        println!("Copying to the right place");
+        // cp_file_to_app_menu(file_name);
     }
 }
 
@@ -69,7 +69,7 @@ fn cp_file_to_app_menu(file_name: &OsStr) {
     }
 }
 
-fn add_startup_wm_class(steam_id: String, file_path: PathBuf) {
+fn add_startup_wm_class(steam_id: String, file_path: &PathBuf) {
     let mut startup_wm_class = String::new();
 
     startup_wm_class.push_str(constants::STEAM_STARTUP_WM_CLASS_PATH);
