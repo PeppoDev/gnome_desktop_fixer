@@ -11,34 +11,39 @@ This tool addresses common issues with Steam games on GNOME:
 
 ## Installation
 
-### Building from Source
+### Quick Installation
+
+The easiest way to install is using the provided script:
 
 ```bash
 # Clone the repository
 git clone <repository-url>
 cd gnome_desktop_fixer
 
-# Build the project
-cargo build --release
+# Run the installation script
+chmod +x scripts/install.sh
+sudo ./scripts/install.sh
+```
 
-# The binary will be available at target/release/gnome_desktop_fixer
+This will:
+1. Build the binary
+2. Install it to `/usr/local/bin/gnome-desktop-fixer`
+3. Create and enable a systemd service
+4. Start the service automatically
+
+## Uninstallation
+
+### Quick Uninstallation
+
+To remove the tool completely:
+
+```bash
+chmod +x scripts/uninstall.sh
+sudo ./scripts/uninstall.sh
 ```
 
 ## Usage
 
-### Basic Usage
-
-Run the tool to start monitoring for new desktop files:
-
-```bash
-cargo run
-```
-
-Or run the compiled binary:
-
-```bash
-./target/release/gnome_desktop_fixer
-```
 
 ### What Happens When You Run It
 
@@ -69,3 +74,4 @@ src/
 - **Loops**: Some performance issues with file processing loops
 - **Non-Steam Games**: Currently only works with Steam games, could be extended for other game platforms
 - **Steam Native Games**: Currently only works with Steam games with proton, could be extended for native games but its harder to track
+- **Improve installation script**: Currently, it is installing at root level but it could be a systemd user service instead
