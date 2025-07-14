@@ -68,3 +68,4 @@ src/
 - **Performance**: The tool opens many files simultaneously, which can cause "too many open files" errors
 - **Loops**: Some performance issues with file processing loops
 - **Non-Steam Games**: Currently only works with Steam games, could be extended for other game platforms
+- **Steam Native Games**: Currently only works with Steam games with proton, could be extended for native games but its harder to track
