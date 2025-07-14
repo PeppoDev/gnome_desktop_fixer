@@ -31,9 +31,11 @@ fn on_file_creation(raw_file: Option<&OsStr>) {
 }
 
 pub fn run_watch() {
+    println!("Creating a inotify instance");
     let mut inotify = watch_directory();
     let mut buffer = [0u8; 4096];
 
+    println!("Listening events");
     loop {
         let events = inotify
             .read_events_blocking(&mut buffer)
