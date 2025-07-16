@@ -30,7 +30,7 @@ fn on_file_creation(raw_file: Option<&OsStr>) {
     utils::update_desktop_entry(file_path);
 }
 
-pub fn run_watch() {
+pub fn run() {
     println!("Creating a inotify instance");
     let mut inotify = watch_directory();
     let mut buffer = [0u8; 4096];
