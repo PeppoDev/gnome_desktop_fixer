@@ -1,23 +1,28 @@
 #!/bin/bash
 
+
+SERVICE_NAME="gnome-desktop-fixer"
+SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
+BINARY_PATH="/usr/local/bin/${SERVICE_NAME}"
+
 # Build the binary
-echo "Building gnome-desktop-fixer..."
+echo "Building ${SERVICE_NAME}"
 cargo build --release
 
 # Install the binary
-echo "Installing binary to /usr/local/bin/..."
-sudo cp target/release/gnome_desktop_fixer /usr/local/bin/gnome-desktop-fixer
-sudo chmod +x /usr/local/bin/gnome-desktop-fixer
+echo "Installing binary to ${BINARY_PATH}"
+sudo cp target/release/gnome_desktop_fixer $BINARY_PATH
+sudo chmod +x $BINARY_PATH
 
 # Create systemd user service
 echo "Creating systemd user service..."
 
-cat > /etc/systemd/system/gnome-desktop-fixer.service << EOF
+cat > $SERVICE_FILE << EOF
 [Unit]
 Description=GNOME Desktop Fixer
 
 [Service]
-ExecStart=/usr/local/bin/gnome_desktop_fixer
+ExecStart=$BINARY_PATH --watch
 Restart=always
 User=$USER
 

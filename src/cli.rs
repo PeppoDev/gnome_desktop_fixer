@@ -19,6 +19,7 @@ pub struct Args {
     #[arg(short, long)]
     update: bool,
 }
+
 pub fn cli_handler() {
     let args = Args::parse();
 
