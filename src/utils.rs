@@ -11,7 +11,7 @@ pub fn get_applications_dir() -> PathBuf {
     return dir;
 }
 
-pub fn update_desktop_entry(path: PathBuf) {
+pub fn update_desktop_entry(path: &PathBuf) {
     println!("\nReading {}", path.display());
 
     let file = fs::read_to_string(&path).expect("Should have been able to read the file");
@@ -41,16 +41,18 @@ fn add_startup_wm_class(steam_id: String, file_path: &PathBuf) {
     startup_wm_class.push_str(steam_id.as_str());
     let mut file = OpenOptions::new().append(true).open(file_path).unwrap();
 
-    writeln!(file, "{}", startup_wm_class).unwrap();
+    write!(file, "{}", startup_wm_class).unwrap();
     println!("File was updated");
 }
 
 fn has_startup_wm_class<'t>(lines: Split<'t, &'t str>) -> bool {
-    let mut has_startup_wm_class = false;
     for line in lines {
-        has_startup_wm_class = line.contains(constants::STEAM_STARTUP_WM_CLASS_PATH);
+        let has_startup_wm_class = line.contains(constants::STEAM_STARTUP_WM_CLASS_PATH);
+        if has_startup_wm_class {
+            return true;
+        }
     }
-    return has_startup_wm_class;
+    return false;
 }
 
 // TODO: search more about lifetime parameter

@@ -6,5 +6,4 @@ edition = "2024"
 [dependencies]
 inotify = "0.11"
 dirs = "6.0.0"
-# syntect = "5.0"
-
+clap = { version = "4.5.41", features = ["derive"] }

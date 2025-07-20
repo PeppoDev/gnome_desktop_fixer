@@ -1,7 +1,10 @@
+mod cli;
 mod constants;
+mod mass_update;
+mod update;
 mod utils;
 mod watch;
 
 fn main() {
-    watch::run_watch();
+    cli::cli_handler();
 }
