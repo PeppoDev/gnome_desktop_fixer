@@ -27,7 +27,7 @@ fn on_file_creation(raw_file: Option<&OsStr>) {
     file_path.push(utils::get_applications_dir());
     file_path.push(file_name);
 
-    utils::update_desktop_entry(file_path);
+    utils::update_desktop_entry(&file_path);
 }
 
 pub fn run() {

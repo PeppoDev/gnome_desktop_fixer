@@ -29,14 +29,16 @@ pub fn cli_handler() {
         args.watch, args.mass_update, args.update
     );
 
+    if args.update {
+        println!("Starting update binary");
+        update::run();
+    }
+    if args.mass_update {
+        println!("Starting mass update");
+        mass_update::run();
+    }
     if args.watch {
         println!("Starting watch mode");
         watch::run()
-    } else if args.mass_update {
-        println!("Starting mass update");
-        mass_update::run();
-    } else if args.update {
-        println!("Starting update binary");
-        update::run();
     }
 }
